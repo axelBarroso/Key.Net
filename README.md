@@ -44,7 +44,7 @@ python extract_multiscale_features.py --list-images test_im/image.txt --results-
 ``` 
 
 
-### HSequences Benchmark
+## HSequences Benchmark
 
 We also provide the benchmark to compute [HSequences](https://github.com/hpatches/hpatches-dataset) repeatability (single- and multi-scale), and MMA metrics. To do so, first download full images (HSequences) from [HPatches repository](http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz). Once downloaded, place it on the root directory of the project. We provide a file `HSequences_bench/HPatches_images.txt` containing the list of images inside HSequences.
 
@@ -72,7 +72,7 @@ Use arguments to set different options:
   * detector-name: Set the name of the detector for which you desire to compute the benchmark (and features have been already extracted).
 
 
-### Training Key.Net 
+## Training Key.Net 
 
 Before training Key.Net a synthetic dataset must be generated. In our paper, we downloaded ImageNet and used it to generate synthetic pairs of images, however, any other dataset would work if it is big enough. Therefore, the first time you run the `train_network.py` script, two tfrecord will be generated, one for training and another for validation. This is only done when the code couldn't find them, thus, the next runs of the script will skip this part.
 
