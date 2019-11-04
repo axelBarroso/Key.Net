@@ -24,11 +24,11 @@ def create_results():
        'num_points_multi_scale': [],
        'error_overlap_single_scale': [],
        'error_overlap_multi_scale': [],
-       'match_score': [],
-       'match_score_corr': [],
+       'mma': [],
+       'mma_corr': [],
        'num_matches': [],
        'num_mutual_corresp': [],
-       'MMA': [],
+       'avg_mma': [],
        'num_matches': [],
     }
 

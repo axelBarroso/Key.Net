@@ -39,7 +39,7 @@ def hsequences_metrics():
     parser.add_argument('--overlap', type=float, default=0.6,
                         help='The overlap threshold for a correspondence to be considered correct.')
 
-    parser.add_argument('--pixel-threshold', type=float, default=5,
+    parser.add_argument('--pixel-threshold', type=int, default=5,
                         help='The distance of pixels for a matching correspondence to be considered correct.')
 
     parser.add_argument('--dst-to-src-evaluation', type=bool, default=True,
@@ -194,11 +194,11 @@ def hsequences_metrics():
             results['error_overlap_multi_scale'].append(
                 repeatability_results['error_overlap_multi_scale'])
 
-            results['match_score'].append(match_score[str(args.pixel_threshold)])
-            results['match_score_corr'].append(match_score_corr[str(args.pixel_threshold)])
+            results['mma'].append(match_score[str(args.pixel_threshold)])
+            results['mma_corr'].append(match_score_corr[str(args.pixel_threshold)])
             results['num_matches'].append(num_matches[str(args.pixel_threshold)])
             results['num_mutual_corresp'].append(len(matches_np))
-            results['MMA'].append(mma)
+            results['avg_mma'].append(mma)
             results['num_features'].append(repeatability_results['total_num_points'])
 
     # average the results
@@ -206,11 +206,11 @@ def hsequences_metrics():
     rep_multi = np.array(results['rep_multi_scale']).mean()
     error_overlap_s = np.array(results['error_overlap_single_scale']).mean()
     error_overlap_m = np.array(results['error_overlap_multi_scale']).mean()
-    match_score = np.array(results['match_score']).mean()
-    match_score_corr = np.array(results['match_score_corr']).mean()
+    mma = np.array(results['mma']).mean()
+    mma_corr = np.array(results['mma_corr']).mean()
     num_matches = np.array(results['num_matches']).mean()
     num_mutual_corresp = np.array(results['num_mutual_corresp']).mean()
-    mma = np.array(results['MMA']).mean()
+    avg_mma = np.array(results['avg_mma']).mean()
     num_features = np.array(results['num_features']).mean()
 
     # Matching Score: Matching Score taking into account all features that have been
@@ -224,14 +224,14 @@ def hsequences_metrics():
            #### Rep. Single: {2:.4f}\n \
            #### Overlap Multi: {3:.4f}\n \
            #### Overlap Single: {4:.4f}\n \
-           #### Matching Score: {5:.4f}\n \
-           #### Matching Score (possible matches): {6:.4f}\n \
+           #### MMA: {5:.4f}\n \
+           #### MMA (possible matches): {6:.4f}\n \
            #### Num matches: {7:.4f}\n \
            #### Num Mutual Correspondences: {8:.4f}\n \
-           #### MMA: {9:.4f}\n \
+           #### Avg. over Threshold MMA: {9:.4f}\n \
            #### Num Feats: {10:.4f}'.format(
-        args.overlap, rep_multi, rep_single, error_overlap_s, error_overlap_m, match_score,
-        match_score_corr, num_matches, num_mutual_corresp, mma, num_features))
+        args.overlap, rep_multi, rep_single, error_overlap_s, error_overlap_m, mma,
+        mma_corr, num_matches, num_mutual_corresp, avg_mma, num_features))
 
     # Store data (serialize)
     output_file_path = os.path.join(args.results_bench_dir, '{0}_{1}.pickle'
