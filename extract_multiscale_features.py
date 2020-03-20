@@ -4,13 +4,13 @@ from os import path, mkdir
 import argparse
 import keyNet.aux.tools as aux
 from skimage.transform import pyramid_gaussian
-from HSequences_bench.tools.HSequences_reader import HSequences_dataset
 import HSequences_bench.tools.geometry_tools as geo_tools
 import HSequences_bench.tools.repeatability_tools as rep_tools
 from keyNet.model.keynet_architecture import *
 import keyNet.aux.desc_aux_function as loss_desc
-from keyNet.model.hardnet import *
+from keyNet.model.hardnet_pytorch import *
 from keyNet.datasets.dataset_utils import read_bw_image
+import torch
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -43,7 +43,7 @@ def extract_multiscale_features():
     parser.add_argument('--checkpoint-det-dir', type=str, default='keyNet/pretrained_nets/KeyNet_default',
                         help='The path to the checkpoint file to load the detector weights.')
 
-    parser.add_argument('--checkpoint-desc-dir', type=str, default='keyNet/pretrained_nets/hardnet_checkpoint.pickle',
+    parser.add_argument('--pytorch-hardnet-dir', type=str, default='keyNet/pretrained_nets/HardNet++.pth',
                         help='The path to the checkpoint file to load the HardNet descriptor weights.')
 
     # Detector Settings
@@ -83,10 +83,10 @@ def extract_multiscale_features():
     parser.add_argument('--random-seed', type=int, default=12345,
                         help='The random seed value for TensorFlow and Numpy.')
 
-    parser.add_argument('--pyramid_levels', type=int, default=4,
+    parser.add_argument('--pyramid_levels', type=int, default=5,
                         help='The number of downsample levels in the pyramid.')
 
-    parser.add_argument('--upsampled-levels', type=int, default=0,
+    parser.add_argument('--upsampled-levels', type=int, default=1,
                         help='The number of upsample levels in the pyramid.')
 
     parser.add_argument('--scale-factor-levels', type=float, default=np.sqrt(2),
@@ -209,7 +209,14 @@ def extract_multiscale_features():
                 dimension_image: np.array([1, im.shape[1], im.shape[2]], dtype=np.int32),
             }
 
-            desc_batch = sess.run(output_desc, feed_dict=feed_dict)
+            patch_batch = sess.run(input_patches, feed_dict=feed_dict)
+            patch_batch = np.reshape(patch_batch, (patch_batch.shape[0], 1, 32, 32))
+            data_a = torch.from_numpy(patch_batch)
+            data_a = data_a.cuda()
+            data_a = Variable(data_a)
+            with torch.no_grad():
+                out_a = model(data_a)
+            desc_batch = out_a.data.cpu().numpy().reshape(-1, 128)
             if idx_desc_batch == 0:
                 descriptors = desc_batch
             else:
@@ -242,10 +249,12 @@ def extract_multiscale_features():
         # Extract Patches from inputs:
         input_patches = loss_desc.build_patch_extraction(kpts_coord, kpts_batch, input_network, kpts_scale=kpts_scale)
 
-        with tf.name_scope('model_deep_descriptor'):
-
-            descriptor_architecture = HardNet(args.checkpoint_desc_dir)
-            output_desc = descriptor_architecture.model(input_patches)
+        # Define Pytorch HardNet
+        model = HardNet()
+        checkpoint = torch.load(args.pytorch_hardnet_dir)
+        model.load_state_dict(checkpoint['state_dict'])
+        model.eval()
+        model.cuda()
 
         # Define variables
         detect_var = [v for v in tf.trainable_variables(scope='model_deep_detector')]

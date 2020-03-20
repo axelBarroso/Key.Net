@@ -7,6 +7,12 @@ Axel Barroso-Laguna, Edgar Riba, Daniel Ponsa, Krystian Mikolajczyk. ICCV 2019.
 ```
 [[Paper on arxiv](https://arxiv.org/abs/1904.00889)]
 
+
+## Update on March 20 2020
+
+We have updated the descriptor part. Before, we were using a TensorFlow implementation of the HardNet descriptor, which we switched to the official [HardNet model in Pytorch](https://github.com/DagnyT/hardnet). 
+This change provides better results on the matching step, and thus, all that follows.
+
 ## Prerequisite
 
 Python 3.7 is required for running Key.Net code. Use Conda to install the dependencies:
@@ -16,6 +22,7 @@ conda create --name keyNet_environment tensorflow-gpu=1.13.1
 conda activate keyNet_environment 
 conda install -c conda-forge opencv tqdm
 conda install -c conda-forge scikit-image
+conda install pytorch==1.2.0 -c pytorch
 ```
 
 ## Feature Extraction
