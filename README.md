@@ -8,6 +8,9 @@ Axel Barroso-Laguna, Edgar Riba, Daniel Ponsa, Krystian Mikolajczyk. ICCV 2019.
 [[Paper on arxiv](https://arxiv.org/abs/1904.00889)]
 
 
+## Update on December 8 2021
+We have created a repository with a Key.Net version implemented in PyTorch. Refer to [our new repo](https://github.com/axelBarroso/Key.Net-Pytorch) for more details. 
+
 ## Update on March 20 2020
 
 We have updated the descriptor part. Before, we were using a TensorFlow implementation of the HardNet descriptor, which we switched to the official [HardNet model in Pytorch](https://github.com/DagnyT/hardnet). 
